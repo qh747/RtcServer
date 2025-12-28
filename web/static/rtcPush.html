@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='4' ry='4' fill='%233498db'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='8' fill='white' font-family='Arial, sans-serif'%3ERTC%3C/text%3E%3C/svg%3E" type="image/svg+xml" />
+        <title>RTC推流客户端</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                margin: 0;
+                padding: 20px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: left;
+                justify-content: left;
+            }
+            h2 {
+                color: #2c3e50;
+                text-align: left;
+                margin-top: 0px;
+                margin-bottom: 20px;
+                font-size: 30px;
+                font-weight: 700;
+                background: linear-gradient(45deg, #3498db, #2c3e50);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                position: relative;
+            }
+            label {
+                margin-bottom: 8px;
+                font-weight: 700;
+                color: #34495e;
+                font-size: 18px;
+                margin-right: 10px;
+            }
+            input {
+                margin-bottom: 8px;
+                width: 300px;
+                font-size: 18px;
+                border: 2px solid #3498db; /* 添加边框 */
+                padding: 8px; /* 添加内边距使文本不紧贴边框 */
+                border-radius: 4px; /* 添加圆角 */
+                color: #254d68; /* 输入内容颜色与边框一致 */
+            }
+            input[type="text"]:focus {
+                outline: none; /* 移除默认的聚焦轮廓 */
+                border-color: #3498db; /* 聚焦时保持边框颜色不变 */
+            }
+            input[type="text"]:required:valid {
+                border-color: #3498db;
+            }
+            input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                margin-left: 0px;
+                margin-right: 8px;
+                accent-color: #3498db; /* 使用与input边框相同的蓝色 */
+                border: 2px solid #3498db;
+                border-radius: 4px;
+                cursor: pointer;
+                vertical-align: middle; /* 添加垂直对齐 */
+            }
+            video {
+                width: 1080px;
+                height: 560px;
+                background-color: #e0e0e0; /* 设置默认背景色为浅灰色 */
+                background-size: contain;
+                border: 2px solid #3498db;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                display: block;
+                margin: 10px 0;
+                margin-bottom: 20px;
+            }
+            button {
+                padding: 12px 24px;
+                font-size: 16px;
+                font-weight: 600;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                margin-right: 10px;
+                transition: all 0.3s ease;
+            }
+            #StartPush {
+                background-color: #2ecc71;
+                color: white;
+            }
+            #StartPush:hover {
+                background-color: #27ae60;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            #StopPush {
+                background-color: #e74c3c;
+                color: white;
+            }
+            #StopPush:hover {
+                background-color: #c0392b;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h2>RTC推流客户端</h2>
+        </div>
+        <div>   
+            <label for="streamId">媒体流ID:</label>
+            <input type="text" id="streamId" placeholder="请输入媒体流ID" required>
+        </div>
+        <div>
+            <label for="enableAudio">启用音频:</label>
+            <input type="checkbox" id="enableAudio" value="true" checked>
+
+            <label for="enableVideo">启用视频:</label>
+            <input type="checkbox" id="enableVideo" value="true" checked>
+        </div>
+        <div>
+            <video id="localVideo" controls autoplay>显示窗口</video>
+        </div>
+        <div>   
+            <button id="StartPush">开始推流</button>
+            <button id="StopPush" disabled>停止推流</button>
+        </div>
+    </body>
+</html>
