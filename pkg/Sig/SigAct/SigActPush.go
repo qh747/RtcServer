@@ -1,4 +1,4 @@
-package SigServ
+package SigAct
 
 import (
 	"net/http"

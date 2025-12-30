@@ -2,7 +2,7 @@ package main
 
 import (
 	"rtcServer/pkg/Log"
-	"rtcServer/pkg/SigServ"
+	SigServ "rtcServer/pkg/Sig/SigServ"
 )
 
 func init() {

@@ -3,6 +3,7 @@ package SigServ
 import (
 	"net/http"
 	"rtcServer/pkg/Log"
+	"rtcServer/pkg/Sig/SigAct"
 )
 
 // 信令服务
@@ -11,12 +12,14 @@ type SignalServer struct {
 	_addr string
 
 	// 请求处理回调函数map
-	_acts ActionMap
+	_acts SigAct.ActionMap
 }
 
-/** -------------------------------------------- 外部开放接口 --------------------------------------------- */
+/** -------------------------------------------- EXT --------------------------------------------- */
 
 // 创建服务
+// return 信令服务
+// addr   服务地址
 func New(addr string) *SignalServer {
 	serv := new(SignalServer)
 
@@ -42,26 +45,28 @@ func (serv *SignalServer) Start() {
 	}
 }
 
-/** -------------------------------------------- 内部使用接口 --------------------------------------------- */
+/** -------------------------------------------- IN --------------------------------------------- */
 
 // 注册请求处理回调函数
 func (serv *SignalServer) registAction() {
-	serv._acts = make(ActionMap)
+	serv._acts = make(SigAct.ActionMap)
 
 	// 注册推流url
-	serv._acts[ActionPushUrl()] = NewActionPush()
+	serv._acts[SigAct.ActionPushUrl()] = SigAct.NewActionPush()
 }
 
 // 处理请求
+// w 响应句柄
+// r 请求内容
 func (serv *SignalServer) execute(w http.ResponseWriter, r *http.Request) {
 	act, ok := serv._acts[r.RequestURI]
 	switch {
 	case !ok:
 		// 未找到
-		ActErrNotfound(w, r)
+		SigAct.ActErrNotfound(w, r)
 	case nil == act:
 		// 响应无效
-		ActErrInternalError(w, r)
+		SigAct.ActErrInternalError(w, r)
 	default:
 		// 处理响应
 		act.Execute(w, r)

@@ -13,8 +13,9 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-/** -------------------------------------------- 外部开放接口 --------------------------------------------- */
+/** -------------------------------------------- EXT --------------------------------------------- */
 
+// 日志类型
 const (
 	LFatal = iota
 	LError
@@ -24,6 +25,7 @@ const (
 	LTrace
 )
 
+// 日志参数
 type LogParam struct {
 	LogDir     string
 	LogPrefix  string
@@ -31,6 +33,8 @@ type LogParam struct {
 	LogMaxSize int64
 }
 
+// 日志初始化
+// param 日志初始化参数
 func InitLog(param LogParam) {
 	// 创建日志句柄
 	logHandle = logrus.New()
@@ -67,18 +71,25 @@ func InitLog(param LogParam) {
 	logHandle.SetOutput(multiWriter)
 }
 
+// 获取日志句柄
+// return 日志句柄
 func Log() *logrus.Logger {
 	return logHandle
 }
 
-/** -------------------------------------------- 内部使用接口 --------------------------------------------- */
+/** -------------------------------------------- IN --------------------------------------------- */
 
+// 日志句柄
 var logHandle *logrus.Logger
 
+// 日志格式
 type logFormat struct {
 	_fmt string
 }
 
+// 日志内容格式化
+// return 写入日志长度, 是否存在错误
+// entry  日志信息
 func (f *logFormat) Format(entry *logrus.Entry) ([]byte, error) {
 	// 如果 entry 的 buffer 为空，创建一个新的
 	var b *bytes.Buffer
@@ -135,6 +146,9 @@ func (f *logFormat) Format(entry *logrus.Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+// 获取日志级别
+// return logrus日志级别
+// l      当前包指定的日志级别
 func getLevel(l int) logrus.Level {
 	switch l {
 	case LFatal:
