@@ -13,6 +13,8 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+/** -------------------------------------------- 外部开放接口 --------------------------------------------- */
+
 const (
 	LFatal = iota
 	LError
@@ -34,7 +36,7 @@ func InitLog(param LogParam) {
 	logHandle = logrus.New()
 	logHandle.SetReportCaller(true)
 	logHandle.SetLevel(getLevel(param.LogLevel))
-	logHandle.SetFormatter(&logFormat{fmt: "2006-01-02 15:04:05.000"})
+	logHandle.SetFormatter(&logFormat{_fmt: "2006-01-02 15:04:05.000"})
 
 	// 创建日志文件目录
 	param.LogDir += "/" + time.Now().Format("2006-01-02")
@@ -69,10 +71,12 @@ func Log() *logrus.Logger {
 	return logHandle
 }
 
+/** -------------------------------------------- 内部使用接口 --------------------------------------------- */
+
 var logHandle *logrus.Logger
 
 type logFormat struct {
-	fmt string
+	_fmt string
 }
 
 func (f *logFormat) Format(entry *logrus.Entry) ([]byte, error) {
@@ -86,7 +90,7 @@ func (f *logFormat) Format(entry *logrus.Entry) ([]byte, error) {
 
 	// 1. 时间戳：[年-月-日 时:分:秒.毫秒]
 	timestamp := entry.Time
-	fmt.Fprintf(b, "[%s]", timestamp.Format(f.fmt))
+	fmt.Fprintf(b, "[%s]", timestamp.Format(f._fmt))
 
 	// 2. 日志级别：[级别]
 	level := strings.ToUpper(entry.Level.String())

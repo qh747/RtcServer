@@ -1,8 +1,8 @@
 package SigServ
 
 import (
-	"fmt"
 	"net/http"
+	"rtcServer/pkg/Log"
 )
 
 // 信令服务
@@ -28,12 +28,13 @@ func (serv *SignalServer) Init(addr string) {
 // 启动服务
 func (serv *SignalServer) Start() {
 	// 启动http服务
+	Log.Log().Infof("Start signal server. listen: %s", serv._addr)
 	err := http.ListenAndServe(serv._addr, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		serv.execute(w, r)
 	}))
 
 	if nil != err {
-		fmt.Println("Start signal server error. addr:", serv._addr, "err:", err)
+		Log.Log().Errorf("Start signal server error. addr: %s, err: %v", serv._addr, err)
 		return
 	}
 }
