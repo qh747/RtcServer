@@ -3,7 +3,7 @@ package SigAct
 import (
 	"fmt"
 	"net/http"
-	"rtcServer/pkg/Log"
+	"rtcServer/pkg/Common/Log"
 )
 
 type ActionError struct {
