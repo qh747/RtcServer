@@ -71,17 +71,13 @@ func startEnvir() {
 	var wg sync.WaitGroup
 
 	// 子协程启动服务
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		sigServ.Start()
-	}()
+	})
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		sigSslServ.Start()
-	}()
+	})
 
 	// 等待退出
 	sigChan := make(chan os.Signal, 1)
