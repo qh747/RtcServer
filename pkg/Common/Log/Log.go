@@ -35,7 +35,7 @@ type LogParam struct {
 
 // 日志初始化
 // param 日志初始化参数
-func InitLog(param LogParam) {
+func InitLog(param LogParam) error {
 	// 创建日志句柄
 	logHandle = logrus.New()
 	logHandle.SetReportCaller(true)
@@ -49,7 +49,7 @@ func InitLog(param LogParam) {
 		// 目录创建失败，回退到标准输出
 		logHandle.SetOutput(os.Stdout)
 		logHandle.Errorf("Create log directory error. err: %v", err)
-		return
+		return err
 	}
 
 	// 创建日志文件
@@ -69,6 +69,7 @@ func InitLog(param LogParam) {
 	// 同时输出到文件和命令行
 	multiWriter := io.MultiWriter(os.Stdout, lumberjackLogger)
 	logHandle.SetOutput(multiWriter)
+	return nil
 }
 
 // 获取日志句柄
