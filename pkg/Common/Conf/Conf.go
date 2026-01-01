@@ -19,13 +19,20 @@ type LogConfParam struct {
 
 // 信令服务配置参数
 type SigConfParam struct {
-	SigAddr   string
-	SigPort   uint16
-	SigStatic string
+	SigAddr    string
+	SigPort    uint16
+	SigSslPort uint16
+	SigStatic  string
+	SigSslKey  string
+	SigSslCert string
 }
 
 func (s *SigConfParam) GetAddr() string {
 	return s.SigAddr + ":" + strconv.Itoa(int(s.SigPort))
+}
+
+func (s *SigConfParam) GetSslAddr() string {
+	return s.SigAddr + ":" + strconv.Itoa(int(s.SigSslPort))
 }
 
 func InitConf(file string) error {
@@ -58,9 +65,12 @@ var logConf LogConfParam = LogConfParam{
 }
 
 var sigConf SigConfParam = SigConfParam{
-	SigAddr:   "0.0.0.0",
-	SigPort:   8083,
-	SigStatic: "./web/static",
+	SigAddr:    "0.0.0.0",
+	SigPort:    8083,
+	SigSslPort: 8443,
+	SigStatic:  "./web/static",
+	SigSslKey:  "./conf/cert/key.pem",
+	SigSslCert: "./conf/cert/cert.pem",
 }
 
 func loadLogConf(conf map[string]string, err error) {
@@ -135,10 +145,36 @@ func loadSigConf(conf map[string]string, err error) {
 		}
 	}
 
+	sslPort, ok := conf["sig_ssl_port"]
+	if !ok {
+		fmt.Println("Sig config ssl port empty.")
+	} else {
+		val, err := strconv.Atoi(sslPort)
+		if nil != err {
+			fmt.Println("Sig config ssl port invalid.")
+		} else {
+			sigConf.SigSslPort = uint16(val)
+		}
+	}
+
 	static, ok := conf["sig_static"]
 	if !ok {
 		fmt.Println("Sig config static empty.")
 	} else {
 		sigConf.SigStatic = static
+	}
+
+	key, ok := conf["sig_ssl_key"]
+	if !ok {
+		fmt.Println("Sig config ssl key empty.")
+	} else {
+		sigConf.SigSslKey = key
+	}
+
+	cert, ok := conf["sig_ssl_cert"]
+	if !ok {
+		fmt.Println("Sig config ssl cert empty.")
+	} else {
+		sigConf.SigSslCert = cert
 	}
 }

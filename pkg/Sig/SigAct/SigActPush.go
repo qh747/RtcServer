@@ -17,7 +17,7 @@ func PushUrl() string {
 
 func PushNew(static string) *ActionPush {
 	return &ActionPush{
-		_static: static,
+		_static: static + "/rtcPush.html",
 	}
 }
 
@@ -26,5 +26,5 @@ func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	// 响应静态文件
-	http.ServeFile(w, r, act._static+"/rtcPush.html")
+	http.ServeFile(w, r, act._static)
 }

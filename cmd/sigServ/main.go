@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"rtcServer/pkg/Common/Conf"
 	"rtcServer/pkg/Common/Log"
 	"rtcServer/pkg/Sig/SigServ"
+	"sync"
+	"syscall"
+	"time"
 )
 
 // 主函数
@@ -54,7 +59,55 @@ func initEnvir() {
 
 // 启动环境
 func startEnvir() {
+	// 创建context用于优雅关闭
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	sigConf := Conf.GetSigConf()
 	sigServ := SigServ.NewSigServ(sigConf.GetAddr(), sigConf.SigStatic)
-	sigServ.Start()
+	sigSslServ := SigServ.NewSigSslServ(sigConf.GetSslAddr(), sigConf.SigStatic, sigConf.SigSslKey, sigConf.SigSslCert)
+
+	// 创建等待组用于等待所有服务关闭
+	var wg sync.WaitGroup
+
+	// 子协程启动服务
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		sigServ.Start()
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		sigSslServ.Start()
+	}()
+
+	// 等待退出
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+
+	<-sigChan
+	Log.Log().Info("Received shutdown signal, shutting down servers...")
+
+	cancel()
+
+	// 关闭服务
+	sigServ.Stop()
+	sigSslServ.Stop()
+
+	// 等待所有服务协程结束
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		wg.Wait()
+	}()
+
+	// 等待服务关闭或超时
+	select {
+	case <-done:
+		Log.Log().Info("All servers stopped gracefully")
+	case <-time.After(5 * time.Second):
+		Log.Log().Warn("Timeout waiting for servers to stop")
+	}
 }
