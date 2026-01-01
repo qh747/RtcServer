@@ -4,21 +4,27 @@ import (
 	"net/http"
 )
 
-func ActionPushUrl() string {
+/** -------------------------------------------- EXT --------------------------------------------- */
+
+type ActionPush struct {
+	// 静态资源根目录
+	_static string
+}
+
+func PushUrl() string {
 	return "/rtc/push"
 }
 
-func NewActionPush() *ActionPush {
-	return new(ActionPush)
+func PushNew(static string) *ActionPush {
+	return &ActionPush{
+		_static: static,
+	}
 }
 
-type ActionPush struct {
-}
-
-func (act *ActionPush) Execute(w http.ResponseWriter, r *http.Request) {
+func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 	// 设置响应头
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	// 响应静态文件
-	http.ServeFile(w, r, "../web/static/rtcPush.html")
+	http.ServeFile(w, r, act._static+"/rtcPush.html")
 }

@@ -55,6 +55,6 @@ func initEnvir() {
 // 启动环境
 func startEnvir() {
 	sigConf := Conf.GetSigConf()
-	sigServ := SigServ.New(sigConf.GetAddr())
+	sigServ := SigServ.NewSigServ(sigConf.GetAddr(), sigConf.SigStatic)
 	sigServ.Start()
 }

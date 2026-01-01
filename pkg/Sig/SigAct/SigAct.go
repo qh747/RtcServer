@@ -8,7 +8,7 @@ import (
 
 type Action interface {
 	// 执行响应
-	Execute(w http.ResponseWriter, r *http.Request)
+	Act(w http.ResponseWriter, r *http.Request)
 }
 
 // key = url, value response action

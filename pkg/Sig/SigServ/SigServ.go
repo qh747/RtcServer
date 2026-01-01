@@ -11,6 +11,9 @@ type SignalServer struct {
 	// 服务地址
 	_addr string
 
+	// 静态资源根目录
+	_static string
+
 	// 请求处理回调函数map
 	_acts SigAct.ActionMap
 }
@@ -20,15 +23,17 @@ type SignalServer struct {
 // 创建服务
 // return 信令服务
 // addr   服务地址
-func New(addr string) *SignalServer {
-	serv := new(SignalServer)
+func NewSigServ(addr string, static string) *SignalServer {
+	// 创建服务
+	serv := SignalServer{
+		_addr:   addr,
+		_static: static,
+		_acts: map[string]SigAct.Action{
+			SigAct.PushUrl(): SigAct.PushNew(static),
+		},
+	}
 
-	// 设置服务地址
-	serv._addr = addr
-
-	// 注册请求处理回调函数
-	serv.registAction()
-	return serv
+	return &serv
 }
 
 // 启动服务
@@ -47,14 +52,6 @@ func (serv *SignalServer) Start() {
 
 /** -------------------------------------------- IN --------------------------------------------- */
 
-// 注册请求处理回调函数
-func (serv *SignalServer) registAction() {
-	serv._acts = make(SigAct.ActionMap)
-
-	// 注册推流url
-	serv._acts[SigAct.ActionPushUrl()] = SigAct.NewActionPush()
-}
-
 // 处理请求
 // w 响应句柄
 // r 请求内容
@@ -69,6 +66,6 @@ func (serv *SignalServer) execute(w http.ResponseWriter, r *http.Request) {
 		SigAct.ActErrInternalError(w, r)
 	default:
 		// 处理响应
-		act.Execute(w, r)
+		act.Act(w, r)
 	}
 }

@@ -11,7 +11,7 @@ type ActionError struct {
 	_info string
 }
 
-func (act *ActionError) Execute(w http.ResponseWriter, r *http.Request) {
+func (act *ActionError) Act(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(act._code)
 	fmt.Fprintf(w, "%d - %s", act._code, act._info)
 }
@@ -23,7 +23,7 @@ func ActErrNotfound(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Log.Log().Errorf("Action not found error. request: %s", DumpAction(r))
-	err.Execute(w, r)
+	err.Act(w, r)
 }
 
 func ActErrInternalError(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func ActErrInternalError(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Log.Log().Errorf("Action server internal error. request: %s", DumpAction(r))
-	err.Execute(w, r)
+	err.Act(w, r)
 }
 
 func ActErrOther(w http.ResponseWriter, r *http.Request, code int, info string) {
@@ -43,5 +43,5 @@ func ActErrOther(w http.ResponseWriter, r *http.Request, code int, info string) 
 	}
 
 	Log.Log().Errorf("Action other error. code: %d, info: %s, request: %s", code, info, DumpAction(r))
-	err.Execute(w, r)
+	err.Act(w, r)
 }
