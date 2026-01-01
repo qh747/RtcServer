@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"rtcServer/pkg/Common/Log"
 	"rtcServer/pkg/Sig/SigAct"
+	"strings"
 )
 
 /** -------------------------------------------- EXT --------------------------------------------- */
@@ -47,18 +48,22 @@ func NewSigServ(addr string, static string) *SignalServer {
 	serv._impl = &http.Server{
 		Addr: addr,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			act, ok := serv._acts[r.RequestURI]
-			switch {
-			case !ok:
-				// 未找到
-				SigAct.ActErrNotfound(w, r)
-			case nil == act:
-				// 响应无效
-				SigAct.ActErrInternalError(w, r)
-			default:
-				// 处理响应
-				act.Act(w, r)
+			for url, act := range serv._acts {
+				if url == r.RequestURI || strings.HasPrefix(r.RequestURI, url+"/") {
+					// 找到响应
+					if nil == act {
+						// 响应无效
+						SigAct.ActErrInternalError(w, r)
+					} else {
+						// 处理响应
+						act.Act(w, r)
+					}
+					return
+				}
 			}
+
+			// 未找到
+			SigAct.ActErrNotfound(w, r)
 		}),
 	}
 
