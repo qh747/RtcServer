@@ -3,6 +3,7 @@ package SigAct
 import (
 	"net/http"
 	"path/filepath"
+	"rtcServer/pkg/Common/Log"
 	"strings"
 )
 
@@ -24,6 +25,17 @@ func PushNew(static string) *ActionPush {
 }
 
 func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
+	if "GET" == r.Method {
+		act.actGet(w, r)
+	} else if "POST" == r.Method {
+		act.actPost(w, r)
+	} else {
+		Log.Log().Errorf("Action push error. request method invalid. request: %s", DumpAction(r))
+		http.NotFound(w, r)
+	}
+}
+
+func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 	if PushUrl() == r.RequestURI {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		http.ServeFile(w, r, act._static+"/push.html")
@@ -64,6 +76,16 @@ func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 
 		http.ServeFile(w, r, filePath)
 	} else {
+		Log.Log().Errorf("Action push get error. request url invalid. request: %s", DumpAction(r))
+		http.NotFound(w, r)
+	}
+}
+
+func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.RequestURI, PushUrl()+"/start") {
+		Log.Log().Infof("Action push post. receive request: %s", DumpAction(r))
+	} else {
+		Log.Log().Errorf("Action push post error. request url invalid. request: %s", DumpAction(r))
 		http.NotFound(w, r)
 	}
 }

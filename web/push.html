@@ -38,7 +38,7 @@
             }
             input {
                 margin-bottom: 8px;
-                width: 300px;
+                width: 800px;
                 font-size: 18px;
                 border: 2px solid #3498db; /* 添加边框 */
                 padding: 8px; /* 添加内边距使文本不紧贴边框 */
@@ -110,15 +110,18 @@
             <h2>RTC推流客户端</h2>
         </div>
         <div>   
-            <label for="streamId">媒体流ID:</label>
-            <input type="text" id="streamId" placeholder="请输入媒体流ID" required>
+            <label for="url">推流URL:</label>
+            <input type="text" id="url" value="https://127.0.0.1:443/rtc/push/start?stream=stream_id&app=app_id" required>
         </div>
         <div>
-            <label for="enableAudio">启用音频:</label>
+            <label for="audioLabel">启用音频:</label>
             <input type="checkbox" id="enableAudio" value="true" checked>
 
-            <label for="enableVideo">启用视频:</label>
+            <label for="videoLabel">启用视频:</label>
             <input type="checkbox" id="enableVideo" value="true" checked>
+
+            <label for="screenLabel">共享屏幕:</label>
+            <input type="checkbox" id="enableScreen" value="true" checked>
         </div>
         <div>
             <video id="localVideo" controls autoplay>显示窗口</video>
@@ -131,5 +134,4 @@
 
     <script src="/rtc/push/js/push.js"></script>
     <script src="/rtc/push/js/adapter.js"></script>
-    <script src="/rtc/push/js/jquery-3.7.1.min.js"></script>
 </html>
