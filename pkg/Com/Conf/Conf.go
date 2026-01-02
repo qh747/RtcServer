@@ -19,12 +19,13 @@ type LogConfParam struct {
 
 // 信令服务配置参数
 type SigConfParam struct {
-	SigAddr    string
-	SigPort    uint16
-	SigSslPort uint16
-	SigStatic  string
-	SigSslKey  string
-	SigSslCert string
+	SigAddr     string
+	SigPort     uint16
+	SigSslPort  uint16
+	SigStatic   string
+	SigSslKey   string
+	SigSslCert  string
+	SigConnAddr string
 }
 
 func (s *SigConfParam) GetAddr() string {
@@ -65,12 +66,13 @@ var logConf LogConfParam = LogConfParam{
 }
 
 var sigConf SigConfParam = SigConfParam{
-	SigAddr:    "0.0.0.0",
-	SigPort:    8083,
-	SigSslPort: 8443,
-	SigStatic:  "./web/static",
-	SigSslKey:  "./conf/cert/key.pem",
-	SigSslCert: "./conf/cert/cert.pem",
+	SigAddr:     "0.0.0.0",
+	SigPort:     8083,
+	SigSslPort:  8443,
+	SigStatic:   "./web/static",
+	SigSslKey:   "./conf/cert/key.pem",
+	SigSslCert:  "./conf/cert/cert.pem",
+	SigConnAddr: "127.0.0.1:0983",
 }
 
 func loadLogConf(conf map[string]string, err error) {
@@ -176,5 +178,12 @@ func loadSigConf(conf map[string]string, err error) {
 		fmt.Println("Sig config ssl cert empty.")
 	} else {
 		sigConf.SigSslCert = cert
+	}
+
+	connAddr, ok := conf["sig_conn_addr"]
+	if !ok {
+		fmt.Println("Sig config conn addr empty.")
+	} else {
+		sigConf.SigConnAddr = connAddr
 	}
 }

@@ -72,8 +72,6 @@ func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "image/jpeg")
 		} else if strings.HasSuffix(filePath, ".gif") {
 			w.Header().Set("Content-Type", "image/gif")
-		} else {
-			// 默认使用http.ServeFile自动检测Content-Type
 		}
 
 		http.ServeFile(w, r, filePath)

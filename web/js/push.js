@@ -47,6 +47,27 @@ btnStart.addEventListener('click', async function() {
         // 获取本地媒体流
         var localStream = null;
         if (screenEnabled) {
+            // 综合检测iOS设备，包括iPadOS在桌面模式下的情况
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                // 检测是否在iOS设备的Webview中
+                (navigator.platform === 'iPhone' || navigator.platform === 'iPad' || navigator.platform === 'iPod');
+            
+            // 额外检测：检查是否支持getDisplayMedia API，因为iOS浏览器不支持
+            const supportsDisplayMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+            
+            // 如果是iOS设备或不支持getDisplayMedia API，则抛出错误
+            if (isIOS || !supportsDisplayMedia) {
+                // 检查getDisplayMedia API是否存在
+                if (!supportsDisplayMedia) {
+                    alert('当前浏览器不支持屏幕共享, 请使用摄像头进行推流。');
+                    throw new Error('getDisplayMedia API not supported on this device');
+                } else {
+                    alert('iOS设备不支持屏幕共享, 请使用摄像头进行推流。');
+                    throw new Error('iOS设备不支持屏幕共享');
+                }
+            }
+
             localStream = await navigator.mediaDevices.getDisplayMedia({
                 video: videoEnabled,
                 audio: audioEnabled
