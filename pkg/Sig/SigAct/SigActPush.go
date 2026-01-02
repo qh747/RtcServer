@@ -1,9 +1,11 @@
 package SigAct
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
-	"rtcServer/pkg/Common/Log"
+	"rtcServer/pkg/Com/Json"
+	"rtcServer/pkg/Com/Log"
 	"strings"
 )
 
@@ -31,7 +33,7 @@ func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 		act.actPost(w, r)
 	} else {
 		Log.Log().Errorf("Action push error. request method invalid. request: %s", DumpAction(r))
-		http.NotFound(w, r)
+		ActErrNotfound(w, r)
 	}
 }
 
@@ -83,9 +85,21 @@ func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 
 func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.RequestURI, PushUrl()+"/start") {
-		Log.Log().Infof("Action push post. receive request: %s", DumpAction(r))
+		if _, err := Json.NewPushReq(r); nil != err {
+			ActErrInvalidPushRequest(w, r, -1, "Load request error")
+			return
+		}
+
+		// 发送成功响应
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		pushResp, _ := Json.NewPushResq("0", "success")
+		fmt.Fprintf(w, "%s", pushResp.ToString())
 	} else {
 		Log.Log().Errorf("Action push post error. request url invalid. request: %s", DumpAction(r))
-		http.NotFound(w, r)
+		ActErrNotfound(w, r)
 	}
 }
+
+/** -------------------------------------------- IN --------------------------------------------- */

@@ -1,7 +1,7 @@
 package testlog
 
 import (
-	"rtcServer/pkg/Common/Log"
+	"rtcServer/pkg/Com/Log"
 	"strings"
 	"sync"
 	"testing"

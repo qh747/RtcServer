@@ -2,7 +2,7 @@ package SigServ
 
 import (
 	"net/http"
-	"rtcServer/pkg/Common/Log"
+	"rtcServer/pkg/Com/Log"
 	"rtcServer/pkg/Sig/SigAct"
 	"strings"
 )

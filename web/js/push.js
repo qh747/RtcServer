@@ -116,7 +116,7 @@ function startPush(localStream, url) {
             peerConn.setLocalDescription(desc);
 
             const reqBody = {
-                type: desc.type,
+                type: 'push',
                 sdp: desc.sdp
             };
 
