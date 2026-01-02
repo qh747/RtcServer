@@ -136,9 +136,12 @@ function startPush(localStream, url) {
             console.log('Local sdp: ', desc.sdp);
             peerConn.setLocalDescription(desc);
 
+            const urlObj = new URL(url);
             const reqBody = {
+                room: urlObj.searchParams.get('room'),
+                user: urlObj.searchParams.get('user'),
                 type: 'push',
-                sdp: desc.sdp
+                msg:  desc.sdp
             };
 
             // 发送sdp offer给对端

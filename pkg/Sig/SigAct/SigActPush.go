@@ -2,6 +2,7 @@ package SigAct
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"path/filepath"
 	"rtcServer/pkg/Com/Json"
@@ -83,10 +84,18 @@ func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 
 func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.RequestURI, PushUrl()+"/start") {
-		if _, err := Json.NewPushReq(r); nil != err {
+		str, err := io.ReadAll(r.Body)
+		if err != nil {
+			ActErrInvalidPushRequest(w, r, -1, "Request body empty")
+			return
+		}
+
+		var req *Json.PushReq
+		if req, err = Json.NewPushReq(str); nil != err {
 			ActErrInvalidPushRequest(w, r, -1, "Load request error")
 			return
 		}
+		Log.Log().Infof("Push request. room: %s. user: %s. type: %s. msg: %s", req.Room, req.User, req.Type, req.Msg)
 
 		// 发送成功响应
 		w.Header().Set("Content-Type", "application/json")
