@@ -115,17 +115,22 @@ function reset() {
 
 function startPush(localStream, url) {
     peerConn = new RTCPeerConnection();
-    peerConn.addStream(localStream);
+    localStream.getTracks().forEach(track => {
+        const transceiver = peerConn.addTransceiver(track, {
+            direction: 'sendonly'
+        });
+    });
 
     // 设置ice事件
     peerConn.oniceconnectionstatechange = function(event) {
-        console.log('On ice state change event: ', event, '. state: ', peerConn.iceConnectionState);
+        if (null != event) {
+            console.log('On ice state change event: ', event, '. state: ', peerConn.iceConnectionState);
+        }
     }
 
     peerConn.onicecandidate = function(event) {
-        if (null != event.candidate) {
+        if (null != event && null != event.candidate) {
             console.log('On ice candidate: ', event.candidate.candidate);
-            peerConn.addIceCandidate(event.candidate);
         }
     }
 

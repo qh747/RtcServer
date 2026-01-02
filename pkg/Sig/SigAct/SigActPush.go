@@ -41,7 +41,7 @@ func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 	if PushUrl() == r.RequestURI {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		http.ServeFile(w, r, act._static+"/push.html")
+		http.ServeFile(w, r, act._static+"/rtcPush.html")
 	} else if strings.HasPrefix(r.RequestURI, PushUrl()+"/") {
 		// 获取请求路径中除前缀外的部分
 		relativePath := r.RequestURI[len(PushUrl()):]
