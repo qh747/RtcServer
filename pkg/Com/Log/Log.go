@@ -13,26 +13,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-/** -------------------------------------------- EXT --------------------------------------------- */
-
-// 日志类型
-const (
-	LFatal = iota
-	LError
-	LWarn
-	LInfo
-	LDebug
-	LTrace
-)
-
-// 日志参数
-type LogParam struct {
-	LogDir     string
-	LogPrefix  string
-	LogLevel   int
-	LogMaxSize int64
-}
-
 // 日志初始化
 // param 日志初始化参数
 func InitLog(param LogParam) error {
@@ -78,10 +58,26 @@ func Log() *logrus.Logger {
 	return logHandle
 }
 
-/** -------------------------------------------- IN --------------------------------------------- */
-
 // 日志句柄
 var logHandle *logrus.Logger
+
+// 日志类型
+const (
+	LFatal = iota
+	LError
+	LWarn
+	LInfo
+	LDebug
+	LTrace
+)
+
+// 日志参数
+type LogParam struct {
+	LogDir     string
+	LogPrefix  string
+	LogLevel   int
+	LogMaxSize int64
+}
 
 // 日志格式
 type logFormat struct {

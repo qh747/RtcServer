@@ -5,7 +5,20 @@ import (
 	"fmt"
 )
 
-/** -------------------------------------------- EXT --------------------------------------------- */
+func NewPushReq(str []byte) (*PushReq, error) {
+	var req PushReq
+	if err := json.Unmarshal(str, &req); err != nil {
+		return nil, fmt.Errorf("Request body invalid. body: %s", string(str))
+	}
+	return &req, nil
+}
+
+func NewPushResq(code string, msg string) (*PushResp, error) {
+	return &PushResp{
+		Code: code,
+		Msg:  msg,
+	}, nil
+}
 
 type PushReq struct {
 	// 房间id
@@ -23,21 +36,6 @@ type PushResp struct {
 	Code string `json:"code"`
 	// 消息
 	Msg string `json:"msg"`
-}
-
-func NewPushReq(str []byte) (*PushReq, error) {
-	var req PushReq
-	if err := json.Unmarshal(str, &req); err != nil {
-		return nil, fmt.Errorf("Request body invalid. body: %s", string(str))
-	}
-	return &req, nil
-}
-
-func NewPushResq(code string, msg string) (*PushResp, error) {
-	return &PushResp{
-		Code: code,
-		Msg:  msg,
-	}, nil
 }
 
 func (resp *PushResp) ToString() string {

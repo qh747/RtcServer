@@ -8,8 +8,6 @@ import (
 	"strconv"
 )
 
-/** -------------------------------------------- EXT --------------------------------------------- */
-
 type ActionError struct {
 	_code int
 	_info string

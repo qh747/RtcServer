@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"rtcServer/pkg/Com/Conf"
 	"rtcServer/pkg/Com/Log"
+	"rtcServer/pkg/Sig/SigCli"
 	"rtcServer/pkg/Sig/SigServ"
 	"sync"
 	"syscall"
@@ -46,14 +47,20 @@ func initEnvir() {
 	}
 
 	// 加载日志配置
-	logConf := Conf.GetLogConf()
 	if err := Log.InitLog(Log.LogParam{
-		LogDir:     logConf.LogDir,
-		LogPrefix:  logConf.LogPrefix,
-		LogLevel:   logConf.LogLevel,
-		LogMaxSize: logConf.LogMaxSize,
+		LogDir:     Conf.LogConf.LogDir,
+		LogPrefix:  Conf.LogConf.LogPrefix,
+		LogLevel:   Conf.LogConf.LogLevel,
+		LogMaxSize: Conf.LogConf.LogMaxSize,
 	}); nil != err {
 		fmt.Fprintf(os.Stderr, "Init log error. err: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 加载媒体服务连接配置
+	if err := SigCli.InitMedCli(Conf.SigConf.SigConnAddr); nil != err {
+		fmt.Fprintf(os.Stderr, "Init media conn error. err: %v\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -63,9 +70,8 @@ func startEnvir() {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	sigConf := Conf.GetSigConf()
-	sigServ := SigServ.NewSigServ(sigConf.GetAddr(), sigConf.SigStatic)
-	sigSslServ := SigServ.NewSigSslServ(sigConf.GetSslAddr(), sigConf.SigStatic, sigConf.SigSslKey, sigConf.SigSslCert)
+	sigServ := SigServ.NewSigServ(Conf.SigConf.GetAddr(), Conf.SigConf.SigStatic)
+	sigSslServ := SigServ.NewSigSslServ(Conf.SigConf.GetSslAddr(), Conf.SigConf.SigStatic, Conf.SigConf.SigSslKey, Conf.SigConf.SigSslCert)
 
 	// 创建等待组用于等待所有服务关闭
 	var wg sync.WaitGroup

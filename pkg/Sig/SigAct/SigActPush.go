@@ -10,13 +10,6 @@ import (
 	"strings"
 )
 
-/** -------------------------------------------- EXT --------------------------------------------- */
-
-type ActionPush struct {
-	// 静态资源根目录
-	_static string
-}
-
 func PushUrl() string {
 	return "/rtc/push"
 }
@@ -25,6 +18,11 @@ func PushNew(static string) *ActionPush {
 	return &ActionPush{
 		_static: static,
 	}
+}
+
+type ActionPush struct {
+	// 静态资源根目录
+	_static string
 }
 
 func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
@@ -108,5 +106,3 @@ func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 		ActErrNotfound(w, r)
 	}
 }
-
-/** -------------------------------------------- IN --------------------------------------------- */
