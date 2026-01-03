@@ -4,6 +4,7 @@
 
 ```bash
 cd scripts
+./buildProto.sh
 ./buildSigServ.sh
 ```
 
