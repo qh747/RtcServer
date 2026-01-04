@@ -8,6 +8,42 @@ import (
 	"github.com/unknwon/goconfig"
 )
 
+// 日志配置参数
+type LogConfParam struct {
+	LogDir     string
+	LogPrefix  string
+	LogLevel   int
+	LogMaxSize int64
+}
+
+var LogConf LogConfParam = LogConfParam{
+	LogDir:     "./log",
+	LogPrefix:  "unknown",
+	LogLevel:   0,
+	LogMaxSize: 5,
+}
+
+// 信令服务配置参数
+type SigConfParam struct {
+	SigAddr     string
+	SigPort     uint16
+	SigSslPort  uint16
+	SigStatic   string
+	SigSslKey   string
+	SigSslCert  string
+	SigConnAddr string
+}
+
+var SigConf SigConfParam = SigConfParam{
+	SigAddr:     "0.0.0.0",
+	SigPort:     8083,
+	SigSslPort:  8443,
+	SigStatic:   "./web/static",
+	SigSslKey:   "./conf/cert/key.pem",
+	SigSslCert:  "./conf/cert/cert.pem",
+	SigConnAddr: "http://127.0.0.1:9083",
+}
+
 // 初始化配置
 func InitConf(file string) error {
 	conf, err := goconfig.LoadConfigFile(file)
@@ -27,14 +63,6 @@ func InitConf(file string) error {
 	}
 
 	return nil
-}
-
-// 日志配置参数
-type LogConfParam struct {
-	LogDir     string
-	LogPrefix  string
-	LogLevel   int
-	LogMaxSize int64
 }
 
 func (l *LogConfParam) loadFrom(conf map[string]string) error {
@@ -75,24 +103,6 @@ func (l *LogConfParam) loadFrom(conf map[string]string) error {
 
 	LogConf = logConf
 	return nil
-}
-
-var LogConf LogConfParam = LogConfParam{
-	LogDir:     "./log",
-	LogPrefix:  "unknown",
-	LogLevel:   0,
-	LogMaxSize: 5,
-}
-
-// 信令服务配置参数
-type SigConfParam struct {
-	SigAddr     string
-	SigPort     uint16
-	SigSslPort  uint16
-	SigStatic   string
-	SigSslKey   string
-	SigSslCert  string
-	SigConnAddr string
 }
 
 func (s *SigConfParam) GetAddr() string {
@@ -159,14 +169,4 @@ func (s *SigConfParam) loadFrom(conf map[string]string) error {
 
 	sigConf = sigConf
 	return nil
-}
-
-var SigConf SigConfParam = SigConfParam{
-	SigAddr:     "0.0.0.0",
-	SigPort:     8083,
-	SigSslPort:  8443,
-	SigStatic:   "./web/static",
-	SigSslKey:   "./conf/cert/key.pem",
-	SigSslCert:  "./conf/cert/cert.pem",
-	SigConnAddr: "http://127.0.0.1:9083",
 }

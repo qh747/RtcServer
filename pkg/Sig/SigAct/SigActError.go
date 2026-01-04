@@ -1,11 +1,10 @@
 package SigAct
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"rtcServer/pkg/Com/Json"
 	"rtcServer/pkg/Com/Log"
-	"strconv"
 )
 
 type ActionError struct {
@@ -13,12 +12,12 @@ type ActionError struct {
 	_info string
 }
 
-func (act *ActionError) Act(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(act._code)
-	fmt.Fprintf(w, "%d - %s", act._code, act._info)
+type ErrInvalidReuqest struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
-func (act *ActionError) ActJson(w http.ResponseWriter, r *http.Request) {
+func (act *ActionError) Act(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(act._code)
 	fmt.Fprintf(w, "%s", act._info)
 }
@@ -26,7 +25,7 @@ func (act *ActionError) ActJson(w http.ResponseWriter, r *http.Request) {
 func ActErrNotfound(w http.ResponseWriter, r *http.Request) {
 	err := ActionError{
 		_code: http.StatusNotFound,
-		_info: "Not Found",
+		_info: http.StatusText(http.StatusNotFound),
 	}
 
 	Log.Log().Errorf("Action not found error. request: %s", DumpAction(r))
@@ -36,29 +35,32 @@ func ActErrNotfound(w http.ResponseWriter, r *http.Request) {
 func ActErrInternalError(w http.ResponseWriter, r *http.Request) {
 	err := ActionError{
 		_code: http.StatusInternalServerError,
-		_info: "Server Internal Error",
+		_info: http.StatusText(http.StatusInternalServerError),
 	}
 
 	Log.Log().Errorf("Action server internal error. request: %s", DumpAction(r))
 	err.Act(w, r)
 }
 
-func ActErrInvalidPushRequest(w http.ResponseWriter, r *http.Request, code int, info string) {
-	body, _ := Json.NewPushResq(strconv.Itoa(code), info)
+func ActErrInvalidRequest(w http.ResponseWriter, r *http.Request, msg string) {
+	errBody, _ := json.Marshal(ErrInvalidReuqest{
+		Code: -1,
+		Msg:  "Reuqest invalid",
+	})
 
 	err := ActionError{
-		_code: http.StatusForbidden,
-		_info: (*body).ToString(),
+		_code: http.StatusBadRequest,
+		_info: string(errBody),
 	}
 
-	Log.Log().Errorf("Action invalid push request error. request: %s", DumpAction(r))
-	err.ActJson(w, r)
+	Log.Log().Errorf("Action invalid request error. request: %s", DumpAction(r))
+	err.Act(w, r)
 }
 
 func ActErrOther(w http.ResponseWriter, r *http.Request, code int, info string) {
 	err := ActionError{
 		_code: code,
-		_info: info,
+		_info: http.StatusText(code),
 	}
 
 	Log.Log().Errorf("Action other error. code: %d, info: %s, request: %s", code, info, DumpAction(r))

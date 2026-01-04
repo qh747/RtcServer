@@ -7,6 +7,18 @@ import (
 	"strings"
 )
 
+// 信令服务
+type SignalServer struct {
+	// 静态资源根目录
+	_static string
+
+	// HTTP服务器实例
+	_impl *http.Server
+
+	// 请求处理回调函数map
+	_acts SigAct.ActionMap
+}
+
 // 创建服务
 // return 信令服务
 // addr   服务地址
@@ -42,18 +54,6 @@ func NewSigServ(addr string, static string) *SignalServer {
 	}
 
 	return &serv
-}
-
-// 信令服务
-type SignalServer struct {
-	// 静态资源根目录
-	_static string
-
-	// HTTP服务器实例
-	_impl *http.Server
-
-	// 请求处理回调函数map
-	_acts SigAct.ActionMap
 }
 
 // 启动服务

@@ -26,10 +26,7 @@ const (
 // 推流请求/响应参数
 type RtcPushReqArgs struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Room          string                 `protobuf:"bytes,1,opt,name=Room,proto3" json:"Room,omitempty"`
-	User          string                 `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
-	Type          string                 `protobuf:"bytes,3,opt,name=Type,proto3" json:"Type,omitempty"`
-	Msg           string                 `protobuf:"bytes,4,opt,name=Msg,proto3" json:"Msg,omitempty"`
+	Msg           string                 `protobuf:"bytes,1,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -64,27 +61,6 @@ func (*RtcPushReqArgs) Descriptor() ([]byte, []int) {
 	return file_rpc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *RtcPushReqArgs) GetRoom() string {
-	if x != nil {
-		return x.Room
-	}
-	return ""
-}
-
-func (x *RtcPushReqArgs) GetUser() string {
-	if x != nil {
-		return x.User
-	}
-	return ""
-}
-
-func (x *RtcPushReqArgs) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
 func (x *RtcPushReqArgs) GetMsg() string {
 	if x != nil {
 		return x.Msg
@@ -94,8 +70,7 @@ func (x *RtcPushReqArgs) GetMsg() string {
 
 type RtcPushRespArgs struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          string                 `protobuf:"bytes,1,opt,name=Code,proto3" json:"Code,omitempty"`
-	Msg           string                 `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
+	Msg           string                 `protobuf:"bytes,1,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -130,13 +105,6 @@ func (*RtcPushRespArgs) Descriptor() ([]byte, []int) {
 	return file_rpc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *RtcPushRespArgs) GetCode() string {
-	if x != nil {
-		return x.Code
-	}
-	return ""
-}
-
 func (x *RtcPushRespArgs) GetMsg() string {
 	if x != nil {
 		return x.Msg
@@ -148,15 +116,11 @@ var File_rpc_proto protoreflect.FileDescriptor
 
 const file_rpc_proto_rawDesc = "" +
 	"\n" +
-	"\trpc.proto\"^\n" +
-	"\x0eRtcPushReqArgs\x12\x12\n" +
-	"\x04Room\x18\x01 \x01(\tR\x04Room\x12\x12\n" +
-	"\x04User\x18\x02 \x01(\tR\x04User\x12\x12\n" +
-	"\x04Type\x18\x03 \x01(\tR\x04Type\x12\x10\n" +
-	"\x03Msg\x18\x04 \x01(\tR\x03Msg\"7\n" +
-	"\x0fRtcPushRespArgs\x12\x12\n" +
-	"\x04Code\x18\x01 \x01(\tR\x04Code\x12\x10\n" +
-	"\x03Msg\x18\x02 \x01(\tR\x03Msg29\n" +
+	"\trpc.proto\"\"\n" +
+	"\x0eRtcPushReqArgs\x12\x10\n" +
+	"\x03Msg\x18\x01 \x01(\tR\x03Msg\"#\n" +
+	"\x0fRtcPushRespArgs\x12\x10\n" +
+	"\x03Msg\x18\x01 \x01(\tR\x03Msg29\n" +
 	"\aRpcConn\x12.\n" +
 	"\aRtcPush\x12\x0f.RtcPushReqArgs\x1a\x10.RtcPushRespArgs\"\x00B\aZ\x05.;rpcb\x06proto3"
 

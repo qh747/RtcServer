@@ -1,4 +1,4 @@
-package SigCli
+package SigConn
 
 import (
 	"errors"
@@ -7,20 +7,6 @@ import (
 	"strings"
 	"sync"
 )
-
-// 初始化媒体服务连接
-// return 初始化结果
-// param  param 初始化参数
-func InitMedCli(param string) error {
-	if nil == selector {
-		var err error
-		if selector, err = newSelector(param); nil != err {
-			return err
-		}
-	}
-
-	return nil
-}
 
 // 连接类型
 const (
@@ -34,6 +20,30 @@ type connAddr struct {
 	_type string
 	_addr string
 	_port uint16
+}
+
+// 连接选择器
+type connSelector struct {
+	_idx      int
+	_addr     []*connAddr
+	_lock     sync.RWMutex
+	_bindAddr map[string]*connAddr
+}
+
+// 全局连接选择器变量
+var selector *connSelector
+
+// 初始化媒体服务连接
+// return 初始化结果
+// param  param 初始化参数
+func InitSigConnSelect(param string) error {
+	if nil == selector {
+		var err error
+		if selector, err = newSelector(param); nil != err {
+			return err
+		}
+	}
+	return nil
 }
 
 // 解析连接地址
@@ -95,14 +105,6 @@ func newSelector(param string) (*connSelector, error) {
 	return s, nil
 }
 
-// 连接选择器
-type connSelector struct {
-	_idx      int
-	_addr     []*connAddr
-	_lock     sync.RWMutex
-	_bindAddr map[string]*connAddr
-}
-
 // 设置连接地址
 // return 设置是否存在错误
 // param  param 连接地址
@@ -149,6 +151,3 @@ func (s *connSelector) getAddr(id string) string {
 
 	return addr.toString()
 }
-
-// 全局连接选择器变量
-var selector *connSelector

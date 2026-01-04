@@ -7,6 +7,14 @@ import (
 	"net/http"
 )
 
+type SigHttpConn struct {
+	_url    string
+	_method string
+	_head   map[string]string
+	_body   string
+	_impl   *http.Client
+}
+
 func NewSigHttpConn(url string, method string, head map[string]string, body string) *SigHttpConn {
 	return &SigHttpConn{
 		_url:    url,
@@ -29,14 +37,6 @@ func NewSigHttpsConn(url string, method string, head map[string]string, body str
 		_body:   body,
 		_impl:   &http.Client{Transport: tr},
 	}
-}
-
-type SigHttpConn struct {
-	_url    string
-	_method string
-	_head   map[string]string
-	_body   string
-	_impl   *http.Client
 }
 
 func (c *SigHttpConn) Req() (string, error) {

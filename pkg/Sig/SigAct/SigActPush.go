@@ -1,11 +1,10 @@
 package SigAct
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
 	"net/http"
 	"path/filepath"
-	"rtcServer/pkg/Com/Json"
 	"rtcServer/pkg/Com/Log"
 	"strings"
 )
@@ -20,9 +19,18 @@ func PushNew(static string) *ActionPush {
 	}
 }
 
+// 请求处理
 type ActionPush struct {
 	// 静态资源根目录
 	_static string
+}
+
+// 推流请求
+type PushReuqest struct {
+	Room string `json:"room"`
+	User string `json:"user"`
+	Type string `json:"type"`
+	Msg  string `json:"msg"`
 }
 
 func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
@@ -82,25 +90,24 @@ func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 
 func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.RequestURI, PushUrl()+"/start") {
-		str, err := io.ReadAll(r.Body)
+		// 读取请求
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			ActErrInvalidPushRequest(w, r, -1, "Request body empty")
+			ActErrInvalidRequest(w, r, "Load request body failed")
 			return
 		}
 
-		var req *Json.PushReq
-		if req, err = Json.NewPushReq(str); nil != err {
-			ActErrInvalidPushRequest(w, r, -1, "Load request error")
+		// 解析请求
+		var pushReq PushReuqest
+		if err := json.Unmarshal([]byte(body), &pushReq); nil != err {
+			ActErrInvalidRequest(w, r, "Request body format invalid")
 			return
 		}
-		Log.Log().Infof("Push request. room: %s. user: %s. type: %s. msg: %s", req.Room, req.User, req.Type, req.Msg)
 
-		// 发送成功响应
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		Log.Log().Infof("Receive push request. room: %s. user: %s. type: %s. msg: %s", pushReq.Room, pushReq.User, pushReq.Type, pushReq.Msg)
 
-		pushResp, _ := Json.NewPushResq("0", "success")
-		fmt.Fprintf(w, "%s", pushResp.ToString())
+		// 转发请求给媒体服务
+
 	} else {
 		Log.Log().Errorf("Action push post error. request url invalid. request: %s", DumpAction(r))
 		ActErrNotfound(w, r)

@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"rtcServer/pkg/Com/Conf"
 	"rtcServer/pkg/Com/Log"
-	"rtcServer/pkg/Sig/SigCli"
+	"rtcServer/pkg/Sig/SigConn"
 	"rtcServer/pkg/Sig/SigServ"
 	"sync"
 	"syscall"
@@ -58,7 +58,7 @@ func initEnvir() {
 	}
 
 	// 加载媒体服务连接配置
-	if err := SigCli.InitMedCli(Conf.SigConf.SigConnAddr); nil != err {
+	if err := SigConn.InitSigConnSelect(Conf.SigConf.SigConnAddr); nil != err {
 		fmt.Fprintf(os.Stderr, "Init media conn error. err: %v\n", err)
 		os.Exit(1)
 	}

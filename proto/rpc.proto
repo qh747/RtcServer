@@ -8,15 +8,11 @@ option go_package = ".;rpc";
 
 // 推流请求/响应参数
 message RtcPushReqArgs {
-    string Room = 1;
-    string User = 2;
-    string Type = 3;
-    string Msg  = 4;
+    string Msg  = 1;
 }
 
 message RtcPushRespArgs {
-    string Code = 1;
-    string Msg  = 2;
+    string Msg  = 1;
 }
 
 // rpc连接
