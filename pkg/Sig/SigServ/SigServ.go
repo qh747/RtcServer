@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// 信令服务
+// SignalServer	信令服务
 type SignalServer struct {
 	// 静态资源根目录
 	_static string
@@ -19,9 +19,22 @@ type SignalServer struct {
 	_acts SigAct.ActionMap
 }
 
-// 创建服务
-// return 信令服务
-// addr   服务地址
+// SignalSslServer 信令加密服务
+type SignalSslServer struct {
+	// 密钥
+	_key string
+
+	// 证书
+	_cert string
+
+	// 信令服务器实例
+	_serv *SignalServer
+}
+
+// NewSigServ 				创建信令服务
+// @param addr 				服务地址
+// @param static			静态资源根目录
+// @return *SignalServer	信令服务
 func NewSigServ(addr string, static string) *SignalServer {
 	// 创建服务
 	serv := SignalServer{
@@ -56,7 +69,8 @@ func NewSigServ(addr string, static string) *SignalServer {
 	return &serv
 }
 
-// 启动服务
+// Start 			启动服务
+// @receiver serv 	信令服务
 func (serv *SignalServer) Start() {
 	Log.Log().Infof("Start signal server. listen: %s", serv._impl.Addr)
 	if err := serv._impl.ListenAndServe(); nil != err && http.ErrServerClosed != err {
@@ -65,16 +79,20 @@ func (serv *SignalServer) Start() {
 	}
 }
 
-// 停止服务
+// Stop 			停止服务
+// @receiver serv 	信令服务
 func (serv *SignalServer) Stop() {
 	if serv._impl != nil {
 		serv._impl.Close()
 	}
 }
 
-// 创建加密服务
-// return 信令加密服务
-// addr   服务地址
+// NewSigSslServ 				创建信令加密服务
+// @param addr 					服务地址
+// @param static 				静态资源根目录
+// @param key 					密钥
+// @param cert 					证书
+// @return *SignalSslServer		信令加密服务
 func NewSigSslServ(addr string, static string, key string, cert string) *SignalSslServer {
 	// 创建服务
 	serv := SignalSslServer{
@@ -86,19 +104,8 @@ func NewSigSslServ(addr string, static string, key string, cert string) *SignalS
 	return &serv
 }
 
-// 信令加密服务
-type SignalSslServer struct {
-	// 密钥
-	_key string
-
-	// 证书
-	_cert string
-
-	// 信令服务器实例
-	_serv *SignalServer
-}
-
-// 启动加密服务
+// Start 			启动加密服务
+// @receiver serv 	信令加密服务
 func (serv *SignalSslServer) Start() {
 	Log.Log().Infof("Start signal ssl server. listen: %s", serv._serv._impl.Addr)
 	if err := serv._serv._impl.ListenAndServeTLS(serv._cert, serv._key); nil != err && http.ErrServerClosed != err {
@@ -107,7 +114,8 @@ func (serv *SignalSslServer) Start() {
 	}
 }
 
-// 停止加密服务
+// Stop 			停止加密服务
+// @receiver serv 	信令加密服务
 func (serv *SignalSslServer) Stop() {
 	serv._serv.Stop()
 }

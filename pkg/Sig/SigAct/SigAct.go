@@ -6,18 +6,21 @@ import (
 	"net/http/httputil"
 )
 
+// Action http请求处理接口
 type Action interface {
 	// 执行响应
 	Act(w http.ResponseWriter, r *http.Request)
 }
 
-// key = url, value response action
+// ActionMap http请求处理接口map
 type ActionMap = map[string]Action
+
+// ActionMapPtr http请求处理接口map指针
 type ActionMapPtr = *ActionMap
 
-// 输出http请求
-// return http请求字符串
-// r      http请求
+// DumpAction 		输出http请求
+// @param r			http请求
+// @return string	http请求字符串
 func DumpAction(r *http.Request) string {
 	if r == nil {
 		return "<nil request>"

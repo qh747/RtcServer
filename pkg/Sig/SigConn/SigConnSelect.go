@@ -8,21 +8,14 @@ import (
 	"sync"
 )
 
-// 连接类型
-const (
-	connRpc   = "rpc"
-	connHttp  = "http"
-	connHttps = "https"
-)
-
-// 连接地址
+// connAddr 连接地址
 type connAddr struct {
 	_type string
 	_addr string
 	_port uint16
 }
 
-// 连接选择器
+// connSelector	连接选择器
 type connSelector struct {
 	_idx      int
 	_addr     []*connAddr
@@ -30,12 +23,12 @@ type connSelector struct {
 	_bindAddr map[string]*connAddr
 }
 
-// 全局连接选择器变量
+// selector 全局连接选择器变量
 var selector *connSelector
 
-// 初始化媒体服务连接
-// return 初始化结果
-// param  param 初始化参数
+// InitSigConnSelect	初始化连接选择器
+// @param param 		初始化参数
+// @return error 		初始化是否存在错误
 func InitSigConnSelect(param string) error {
 	if nil == selector {
 		var err error
@@ -46,9 +39,16 @@ func InitSigConnSelect(param string) error {
 	return nil
 }
 
-// 解析连接地址
-// return 解析是否存在错误
-// param  addr 待解析连接地址
+// GetSelector 				获取连接选择器
+// @return *connSelector 	连接选择器
+func GetSelector() *connSelector {
+	return selector
+}
+
+// loadFrom 		加载连接地址
+// @receiver c		连接地址
+// @param addr		连接地址
+// @return error	加载是否存在错误
 func (c *connAddr) loadFrom(addr string) error {
 	if "" == addr {
 		return errors.New("Param empty")
@@ -85,15 +85,17 @@ func (c *connAddr) loadFrom(addr string) error {
 	return nil
 }
 
-// 格式化连接地址
-// return 连接地址
+// toString 		连接地址转换为字符串
+// @receiver c 		连接地址
+// @return string 	连接地址字符串
 func (c *connAddr) toString() string {
 	return c._type + "://" + c._addr + ":" + strconv.FormatUint(uint64(c._port), 10)
 }
 
-// 创建连接选择器
-// return 连接选择器地址，创建是否存在错误
-// param  param 创建参数
+// newSelector 				创建连接选择器
+// @param param 			连接地址
+// @return *connSelector 	连接选择器
+// @return error 			创建是否存在错误
 func newSelector(param string) (*connSelector, error) {
 	s := new(connSelector)
 	s._idx = 0
@@ -105,9 +107,10 @@ func newSelector(param string) (*connSelector, error) {
 	return s, nil
 }
 
-// 设置连接地址
-// return 设置是否存在错误
-// param  param 连接地址
+// setAddr 			设置连接地址
+// @receiver s 		连接选择器
+// @param param		连接地址
+// @return error	设置是否存在错误
 func (s *connSelector) setAddr(param string) error {
 	s._lock.RLock()
 	defer s._lock.RUnlock()
@@ -127,17 +130,18 @@ func (s *connSelector) setAddr(param string) error {
 	return nil
 }
 
-// 获取连接地址
-// return 连接地址
-// param  id 连接地址关联id
-func (s *connSelector) getAddr(id string) string {
+// getAddr 			获取连接地址
+// @receiver s 		连接选择器
+// @param id 		连接id
+// @return connAddr	连接地址
+func (s *connSelector) GetAddr(id string) connAddr {
 	s._lock.RLock()
 	defer s._lock.RUnlock()
 
 	// 优先从已绑定列表中查找
 	addr, ok := s._bindAddr[id]
 	if ok && nil != addr {
-		return addr.toString()
+		return *addr
 	}
 
 	// 如果未绑定则从新增绑定关系
@@ -149,5 +153,5 @@ func (s *connSelector) getAddr(id string) string {
 	addr = s._addr[s._idx]
 	s._bindAddr[id] = addr
 
-	return addr.toString()
+	return *addr
 }

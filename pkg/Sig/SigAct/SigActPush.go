@@ -9,23 +9,28 @@ import (
 	"strings"
 )
 
+// PushUrl 			推流请求路径
+// @return string	url
 func PushUrl() string {
 	return "/rtc/push"
 }
 
+// PushNew 				创建推流请求处理接口
+// @param static 		静态资源根目录
+// @return *ActionPush 	推流请求处理接口
 func PushNew(static string) *ActionPush {
 	return &ActionPush{
 		_static: static,
 	}
 }
 
-// 请求处理
+// ActionPush 推流请求处理接口
 type ActionPush struct {
 	// 静态资源根目录
 	_static string
 }
 
-// 推流请求
+// PushReuqest 推流请求
 type PushReuqest struct {
 	Room string `json:"room"`
 	User string `json:"user"`
@@ -33,6 +38,10 @@ type PushReuqest struct {
 	Msg  string `json:"msg"`
 }
 
+// Act 				执行响应
+// @receiver act 	推流请求处理接口
+// @param w 		http响应
+// @param r 		http请求
 func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 	if "GET" == r.Method {
 		act.actGet(w, r)
@@ -44,6 +53,10 @@ func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// actGet 			GET请求响应
+// @receiver act	推流请求处理接口
+// @param w			http响应
+// @param r			http请求
 func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 	if PushUrl() == r.RequestURI {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -88,6 +101,10 @@ func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// actPost 			POST请求响应
+// @receiver act 	推流请求处理接口
+// @param w 		http响应
+// @param r 		http请求
 func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.RequestURI, PushUrl()+"/start") {
 		// 读取请求

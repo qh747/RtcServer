@@ -9,19 +9,20 @@ import (
 	"rtcServer/pkg/Com/Conf"
 	"rtcServer/pkg/Com/Log"
 	"rtcServer/pkg/Sig/SigConn"
+	"rtcServer/pkg/Sig/SigEv"
 	"rtcServer/pkg/Sig/SigServ"
 	"sync"
 	"syscall"
 	"time"
 )
 
-// 主函数
+// main 主函数
 func main() {
 	initEnvir()
 	startEnvir()
 }
 
-// 初始化环境
+// initEnvir 初始化环境
 func initEnvir() {
 	// 读取命令行输入参数
 	confParam := flag.String("c", "", "config file path")
@@ -62,9 +63,15 @@ func initEnvir() {
 		fmt.Fprintf(os.Stderr, "Init media conn error. err: %v\n", err)
 		os.Exit(1)
 	}
+
+	// 加载事件回调函数
+	if err := SigEv.InitSigEv(); nil != err {
+		fmt.Fprintf(os.Stderr, "Init event error. err: %v\n", err)
+		os.Exit(1)
+	}
 }
 
-// 启动环境
+// startEnvir 启动环境
 func startEnvir() {
 	// 创建context用于优雅关闭
 	_, cancel := context.WithCancel(context.Background())

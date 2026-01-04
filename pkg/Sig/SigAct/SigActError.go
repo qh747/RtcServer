@@ -7,21 +7,30 @@ import (
 	"rtcServer/pkg/Com/Log"
 )
 
+// ActionError http请求处理错误
 type ActionError struct {
 	_code int
 	_info string
 }
 
+// ErrInvalidReuqest 无效请求错误
 type ErrInvalidReuqest struct {
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 }
 
+// Act 				执行响应
+// @receiver act 	http请求处理错误
+// @param w 		http响应
+// @param r 		http请求
 func (act *ActionError) Act(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(act._code)
 	fmt.Fprintf(w, "%s", act._info)
 }
 
+// ActErrNotfound	http请求404错误
+// @param w 		http响应
+// @param r 		http请求
 func ActErrNotfound(w http.ResponseWriter, r *http.Request) {
 	err := ActionError{
 		_code: http.StatusNotFound,
@@ -32,6 +41,9 @@ func ActErrNotfound(w http.ResponseWriter, r *http.Request) {
 	err.Act(w, r)
 }
 
+// ActErrInternalError	http请求500错误
+// @param w 			http响应
+// @param r 			http请求
 func ActErrInternalError(w http.ResponseWriter, r *http.Request) {
 	err := ActionError{
 		_code: http.StatusInternalServerError,
@@ -42,6 +54,10 @@ func ActErrInternalError(w http.ResponseWriter, r *http.Request) {
 	err.Act(w, r)
 }
 
+// ActErrInvalidRequest	http请求无效错误
+// @param w 			http响应
+// @param r 			http请求
+// @param msg 			错误信息
 func ActErrInvalidRequest(w http.ResponseWriter, r *http.Request, msg string) {
 	errBody, _ := json.Marshal(ErrInvalidReuqest{
 		Code: -1,
@@ -57,6 +73,11 @@ func ActErrInvalidRequest(w http.ResponseWriter, r *http.Request, msg string) {
 	err.Act(w, r)
 }
 
+// ActErrOther	http请求其他错误
+// @param w 	http响应
+// @param r 	http请求
+// @param code 	错误码
+// @param info 	错误信息
 func ActErrOther(w http.ResponseWriter, r *http.Request, code int, info string) {
 	err := ActionError{
 		_code: code,

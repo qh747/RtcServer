@@ -13,10 +13,11 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// 日志句柄
+// logHandle 全局日志句柄
 var logHandle *logrus.Logger
 
-// 日志类型
+// const
+// @param LFatal 日志级别
 const (
 	LFatal = iota
 	LError
@@ -26,7 +27,7 @@ const (
 	LTrace
 )
 
-// 日志参数
+// LogParam 日志参数
 type LogParam struct {
 	LogDir     string
 	LogPrefix  string
@@ -34,13 +35,14 @@ type LogParam struct {
 	LogMaxSize int64
 }
 
-// 日志格式
+// logFormat 日志格式化
 type logFormat struct {
 	_fmt string
 }
 
-// 日志初始化
-// param 日志初始化参数
+// InitLog       日志初始化
+// @param param  日志初始化参数
+// @return error 初始化是否成功
 func InitLog(param LogParam) error {
 	// 创建日志句柄
 	logHandle = logrus.New()
@@ -78,15 +80,21 @@ func InitLog(param LogParam) error {
 	return nil
 }
 
-// 获取日志句柄
-// return 日志句柄
+// Log                    获取日志句柄
+// @return *logrus.Logger 日志句柄
 func Log() *logrus.Logger {
 	return logHandle
 }
 
-// 日志内容格式化
+//
 // return 写入日志长度, 是否存在错误
 // entry  日志信息
+
+// Format           日志内容格式化
+// @receiver f		日志格式化
+// @param entry		日志参数
+// @return []byte	日志内容
+// @return error	日志是否格式化成功
 func (f *logFormat) Format(entry *logrus.Entry) ([]byte, error) {
 	// 如果 entry 的 buffer 为空，创建一个新的
 	var b *bytes.Buffer
@@ -143,9 +151,9 @@ func (f *logFormat) Format(entry *logrus.Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// 获取日志级别
-// return logrus日志级别
-// l      当前包指定的日志级别
+// getLevel 			获取日志级别
+// @param l				日志级别
+// @return logrus.Level	日志级别
 func getLevel(l int) logrus.Level {
 	switch l {
 	case LFatal:
