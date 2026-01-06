@@ -126,7 +126,7 @@ func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 		Log.Logger.Infof("Receive push request. room: %s. user: %s. type: %s. msg: %s", pushReq.Room, pushReq.User, pushReq.Type, pushReq.Msg)
 
 		// 转发请求给媒体服务
-		SigEv.Dispatcher.Publish(SigEv.EvTopic(SigEv.EvTopicPush), pushReq.Room, body, func(resp string, err error) {
+		SigEv.Dispatcher.Publish(SigEv.EvTopic(SigEv.EvTopicPush), pushReq.Room, string(body), func(resp string, err error) {
 			if nil != err {
 				ActErrInvalidRequest(w, r, err.Error())
 			} else {

@@ -24,7 +24,8 @@ var Selector *connSelector
 func InitConnSelect(param string) error {
 	if nil == Selector {
 		Selector = &connSelector{
-			_idx: 0,
+			_idx:      0,
+			_bindAddr: make(map[string]*Addr),
 		}
 
 		if err := Selector.setAddr(param); nil != err {

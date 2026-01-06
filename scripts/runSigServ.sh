@@ -1,3 +1,3 @@
 #!/bin/bash 
 
-../bin/signalServer -c ./config.ini
+../bin/signalServer -c ../bin/config.ini

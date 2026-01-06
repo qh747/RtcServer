@@ -35,7 +35,8 @@ func newDispatch(id string) (*EvDispatch, error) {
 		return nil, errors.New("Dispatch id empty")
 	}
 	return &EvDispatch{
-		_id: id,
+		_id:       id,
+		_handlers: make(map[EvTopic]map[string]EvHandler),
 	}, nil
 }
 
