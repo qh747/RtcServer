@@ -16,14 +16,6 @@ type LogConfParam struct {
 	LogMaxSize int64
 }
 
-// LogConf 日志配置参数全局变量
-var LogConf LogConfParam = LogConfParam{
-	LogDir:     "./log",
-	LogPrefix:  "unknown",
-	LogLevel:   0,
-	LogMaxSize: 5,
-}
-
 // SigConfParam 信令服务配置参数
 type SigConfParam struct {
 	SigAddr     string
@@ -35,19 +27,29 @@ type SigConfParam struct {
 	SigConnAddr string
 }
 
-// SigConf 信令配置参数全局变量
-var SigConf SigConfParam = SigConfParam{
-	SigAddr:     "0.0.0.0",
-	SigPort:     8083,
-	SigSslPort:  8443,
-	SigStatic:   "./web/static",
-	SigSslKey:   "./conf/cert/key.pem",
-	SigSslCert:  "./conf/cert/cert.pem",
-	SigConnAddr: "http://127.0.0.1:9083",
-}
+var (
+	// LogConf 日志配置参数全局变量
+	LogConf LogConfParam = LogConfParam{
+		LogDir:     "./log",
+		LogPrefix:  "unknown",
+		LogLevel:   0,
+		LogMaxSize: 5,
+	}
 
-// InitConf      初始化配置
-// @param file   配置文件
+	// SigConf 信令配置参数全局变量
+	SigConf SigConfParam = SigConfParam{
+		SigAddr:     "0.0.0.0",
+		SigPort:     8083,
+		SigSslPort:  8443,
+		SigStatic:   "./web/static",
+		SigSslKey:   "./conf/cert/key.pem",
+		SigSslCert:  "./conf/cert/cert.pem",
+		SigConnAddr: "http://127.0.0.1:9083",
+	}
+)
+
+// InitConf 初始化配置
+// @param file 配置文件
 // @return error 初始化是否成功
 func InitConf(file string) error {
 	conf, err := goconfig.LoadConfigFile(file)
@@ -69,9 +71,9 @@ func InitConf(file string) error {
 	return nil
 }
 
-// loadFrom      加载日志配置
-// @receiver l   日志配置
-// @param conf   配置参数
+// loadFrom 加载日志配置
+// @receiver l 日志配置
+// @param conf 配置参数
 // @return error 加载是否成功
 func (l *LogConfParam) loadFrom(conf map[string]string) error {
 	var logConf LogConfParam
@@ -113,24 +115,24 @@ func (l *LogConfParam) loadFrom(conf map[string]string) error {
 	return nil
 }
 
-// GetAddr        获取信令服务地址
-// @receiver s    信令配置
+// GetAddr 获取信令服务地址
+// @receiver s 信令配置
 // @return string 信令服务地址
 func (s *SigConfParam) GetAddr() string {
 	return s.SigAddr + ":" + strconv.Itoa(int(s.SigPort))
 }
 
-// GetSslAddr     获取加密信令服务地址
-// @receiver s    信令配置
+// GetSslAddr 获取加密信令服务地址
+// @receiver s 信令配置
 // @return string 加密信令服务地址
 func (s *SigConfParam) GetSslAddr() string {
 	return s.SigAddr + ":" + strconv.Itoa(int(s.SigSslPort))
 }
 
-// loadFrom       加载信令配置
-// @receiver s	  信令配置
-// @param conf	  配置参数
-// @return error  加载是否成功
+// loadFrom 加载信令配置
+// @receiver s 信令配置
+// @param conf 配置参数
+// @return error 加载是否成功
 func (s *SigConfParam) loadFrom(conf map[string]string) error {
 	var sigConf SigConfParam
 	addr, ok := conf["sig_addr"]

@@ -59,13 +59,13 @@ func initEnvir() {
 	}
 
 	// 加载媒体服务连接配置
-	if err := SigConn.InitSigConnSelect(Conf.SigConf.SigConnAddr); nil != err {
+	if err := SigConn.InitConnSelect(Conf.SigConf.SigConnAddr); nil != err {
 		fmt.Fprintf(os.Stderr, "Init media conn error. err: %v\n", err)
 		os.Exit(1)
 	}
 
 	// 加载事件回调函数
-	if err := SigEv.InitSigEv(); nil != err {
+	if err := SigEv.InitEv(); nil != err {
 		fmt.Fprintf(os.Stderr, "Init event error. err: %v\n", err)
 		os.Exit(1)
 	}
@@ -77,8 +77,8 @@ func startEnvir() {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	sigServ := SigServ.NewSigServ(Conf.SigConf.GetAddr(), Conf.SigConf.SigStatic)
-	sigSslServ := SigServ.NewSigSslServ(Conf.SigConf.GetSslAddr(), Conf.SigConf.SigStatic, Conf.SigConf.SigSslKey, Conf.SigConf.SigSslCert)
+	sigServ := SigServ.NewServer(Conf.SigConf.GetAddr(), Conf.SigConf.SigStatic)
+	sigSslServ := SigServ.NewSslServer(Conf.SigConf.GetSslAddr(), Conf.SigConf.SigStatic, Conf.SigConf.SigSslKey, Conf.SigConf.SigSslCert)
 
 	// 创建等待组用于等待所有服务关闭
 	var wg sync.WaitGroup
@@ -97,7 +97,7 @@ func startEnvir() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	<-sigChan
-	Log.Log().Info("Received shutdown signal, shutting down servers...")
+	Log.Logger.Info("Received shutdown signal, shutting down servers...")
 
 	cancel()
 
@@ -115,8 +115,8 @@ func startEnvir() {
 	// 等待服务关闭或超时
 	select {
 	case <-done:
-		Log.Log().Info("All servers stopped gracefully")
+		Log.Logger.Info("All servers stopped gracefully")
 	case <-time.After(5 * time.Second):
-		Log.Log().Warn("Timeout waiting for servers to stop")
+		Log.Logger.Warn("Timeout waiting for servers to stop")
 	}
 }

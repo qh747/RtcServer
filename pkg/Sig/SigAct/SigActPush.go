@@ -6,57 +6,60 @@ import (
 	"net/http"
 	"path/filepath"
 	"rtcServer/pkg/Com/Log"
+	"rtcServer/pkg/Sig/SigEv"
 	"strings"
 )
 
-// PushUrl 			推流请求路径
-// @return string	url
+type (
+	// ActionPush 推流请求处理接口
+	ActionPush struct {
+		// 静态资源根目录
+		_static string
+	}
+
+	// PushReuqest 推流请求
+	PushReuqest struct {
+		Room string `json:"room"`
+		User string `json:"user"`
+		Type string `json:"type"`
+		Msg  string `json:"msg"`
+	}
+)
+
+// PushUrl 推流请求路径
+// @return string url
 func PushUrl() string {
 	return "/rtc/push"
 }
 
-// PushNew 				创建推流请求处理接口
-// @param static 		静态资源根目录
-// @return *ActionPush 	推流请求处理接口
+// PushNew 创建推流请求处理接口
+// @param static 静态资源根目录
+// @return *ActionPush 推流请求处理接口
 func PushNew(static string) *ActionPush {
 	return &ActionPush{
 		_static: static,
 	}
 }
 
-// ActionPush 推流请求处理接口
-type ActionPush struct {
-	// 静态资源根目录
-	_static string
-}
-
-// PushReuqest 推流请求
-type PushReuqest struct {
-	Room string `json:"room"`
-	User string `json:"user"`
-	Type string `json:"type"`
-	Msg  string `json:"msg"`
-}
-
-// Act 				执行响应
-// @receiver act 	推流请求处理接口
-// @param w 		http响应
-// @param r 		http请求
+// Act 执行响应
+// @receiver act 推流请求处理接口
+// @param w http响应
+// @param r http请求
 func (act *ActionPush) Act(w http.ResponseWriter, r *http.Request) {
 	if "GET" == r.Method {
 		act.actGet(w, r)
 	} else if "POST" == r.Method {
 		act.actPost(w, r)
 	} else {
-		Log.Log().Errorf("Action push error. request method invalid. request: %s", DumpAction(r))
+		Log.Logger.Errorf("Action push error. request method invalid. request: %s", DumpAction(r))
 		ActErrNotfound(w, r)
 	}
 }
 
-// actGet 			GET请求响应
-// @receiver act	推流请求处理接口
-// @param w			http响应
-// @param r			http请求
+// actGet GET请求响应
+// @receiver act 推流请求处理接口
+// @param w http响应
+// @param r http请求
 func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 	if PushUrl() == r.RequestURI {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -96,15 +99,15 @@ func (act *ActionPush) actGet(w http.ResponseWriter, r *http.Request) {
 
 		http.ServeFile(w, r, filePath)
 	} else {
-		Log.Log().Errorf("Action push get error. request url invalid. request: %s", DumpAction(r))
+		Log.Logger.Errorf("Action push get error. request url invalid. request: %s", DumpAction(r))
 		http.NotFound(w, r)
 	}
 }
 
-// actPost 			POST请求响应
-// @receiver act 	推流请求处理接口
-// @param w 		http响应
-// @param r 		http请求
+// actPost POST请求响应
+// @receiver act 推流请求处理接口
+// @param w http响应
+// @param r http请求
 func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.RequestURI, PushUrl()+"/start") {
 		// 读取请求
@@ -120,13 +123,18 @@ func (act *ActionPush) actPost(w http.ResponseWriter, r *http.Request) {
 			ActErrInvalidRequest(w, r, "Request body format invalid")
 			return
 		}
-
-		Log.Log().Infof("Receive push request. room: %s. user: %s. type: %s. msg: %s", pushReq.Room, pushReq.User, pushReq.Type, pushReq.Msg)
+		Log.Logger.Infof("Receive push request. room: %s. user: %s. type: %s. msg: %s", pushReq.Room, pushReq.User, pushReq.Type, pushReq.Msg)
 
 		// 转发请求给媒体服务
-
+		SigEv.Dispatcher.Publish(SigEv.EvTopic(SigEv.EvTopicPush), pushReq.Room, body, func(resp string, err error) {
+			if nil != err {
+				ActErrInvalidRequest(w, r, err.Error())
+			} else {
+				Log.Logger.Infof("Receive push response. msg: %s", resp)
+			}
+		})
 	} else {
-		Log.Log().Errorf("Action push post error. request url invalid. request: %s", DumpAction(r))
+		Log.Logger.Errorf("Action push post error. request url invalid. request: %s", DumpAction(r))
 		ActErrNotfound(w, r)
 	}
 }

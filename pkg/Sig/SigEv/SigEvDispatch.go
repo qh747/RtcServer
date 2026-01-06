@@ -11,39 +11,40 @@ const (
 	EvTopicPush string = "EvTopicPush"
 )
 
-// EvTopic 事件主题
-type EvTopic string
+type (
+	// EvTopic 事件主题
+	EvTopic string
 
-// EvHandler 	事件处理函数
-// @param args 	事件参数
-type EvHandler func(args ...any)
+	// EvHandler 事件处理函数
+	EvHandler func(args ...any)
 
-// SigEvDispatch 事件分发器
-type SigEvDispatch struct {
-	_id       string
-	_lock     sync.RWMutex
-	_handlers map[EvTopic]map[string]EvHandler
-}
+	// EvDispatch 事件分发器
+	EvDispatch struct {
+		_id       string
+		_lock     sync.RWMutex
+		_handlers map[EvTopic]map[string]EvHandler
+	}
+)
 
-// newDispatch 				创建事件分发器
-// @param id 				事件分发器id
-// @return *SigEvDispatch 	事件分发器
-// @return error 			创建是否存在错误
-func newDispatch(id string) (*SigEvDispatch, error) {
+// newDispatch 创建事件分发器
+// @param id 事件分发器id
+// @return *EvDispatch
+// @return error 创建是否存在错误
+func newDispatch(id string) (*EvDispatch, error) {
 	if "" == id {
 		return nil, errors.New("Dispatch id empty")
 	}
-	return &SigEvDispatch{
+	return &EvDispatch{
 		_id: id,
 	}, nil
 }
 
-// Subscribe 			订阅事件
-// @receiver dispatch 	事件分发器
-// @param topic 		事件主题
-// @param id 			事件监听者id
-// @param handler 		事件处理函数
-func (dispatch *SigEvDispatch) Subscribe(topic EvTopic, id string, handler func(args ...any)) {
+// Subscribe 订阅事件
+// @receiver dispatch 事件分发器
+// @param topic 事件主题
+// @param id 事件监听者id
+// @param handler 事件处理函数
+func (dispatch *EvDispatch) Subscribe(topic EvTopic, id string, handler EvHandler) {
 	dispatch._lock.Lock()
 	defer dispatch._lock.Unlock()
 
@@ -54,11 +55,11 @@ func (dispatch *SigEvDispatch) Subscribe(topic EvTopic, id string, handler func(
 	dispatch._handlers[topic][id] = handler
 }
 
-// Unsubscribe			取消订阅事件
-// @receiver dispatch 	事件分发器
-// @param topic 		事件主题
-// @param id 			事件监听者id
-func (dispatch *SigEvDispatch) Unsubscribe(topic EvTopic, id string) {
+// Unsubscribe 取消订阅事件
+// @receiver dispatch 事件分发器
+// @param topic 事件主题
+// @param id 事件监听者id
+func (dispatch *EvDispatch) Unsubscribe(topic EvTopic, id string) {
 	dispatch._lock.Lock()
 	defer dispatch._lock.Unlock()
 
@@ -67,11 +68,11 @@ func (dispatch *SigEvDispatch) Unsubscribe(topic EvTopic, id string) {
 	}
 }
 
-// Publish 				发布事件
-// @receiver dispatch 	事件分发器
-// @param topic 		事件主题
-// @param args 			事件参数
-func (dispatch *SigEvDispatch) Publish(topic EvTopic, args ...any) {
+// Publish 发布事件
+// @receiver dispatch 事件分发器
+// @param topic 事件主题
+// @param args 事件参数
+func (dispatch *EvDispatch) Publish(topic EvTopic, args ...any) {
 	dispatch._lock.RLock()
 	defer dispatch._lock.RUnlock()
 
