@@ -1,8 +1,12 @@
 # WebRTC Server
 
-## 1.build
+## 1. environment
 
-### 1.1 build signal server
+ubuntu 24.04 server
+
+## 2.build
+
+### 2.1 build signal server
 
 ```bash
 cd scripts
@@ -10,7 +14,7 @@ cd scripts
 ./buildSigServ.sh
 ```
 
-### 1.2 build librtcbase
+### 2.2 build librtcbase
 
 ```bash
 cd cpp/librtcbase
@@ -18,7 +22,7 @@ cmake -B build
 cmake --build build
 ```
 
-## 2.run
+## 3.run
 
 ```bash
 cd scripts
