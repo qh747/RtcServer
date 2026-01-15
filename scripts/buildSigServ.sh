@@ -1,8 +1,8 @@
 #!/bin/bash 
 
-rm ../bin/signalServer
-go build -o ../bin/signalServer ../cmd/sigServ/main.go
+rm ../bin/sigServ/signalServer
+go build -o ../bin/sigServ/signalServer ../cmd/sigServ/main.go
 
-if [ ! -f "../bin/config.ini" ]; then
-    cp ../conf/ini/config.ini ../bin/config.ini
+if [ ! -f "../bin/sigServ/sigConfig.ini" ]; then
+    cp ../conf/ini/sigConfig.ini ../bin/sigServ/sigConfig.ini
 fi

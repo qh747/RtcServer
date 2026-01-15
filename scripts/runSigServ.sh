@@ -1,3 +1,3 @@
 #!/bin/bash 
 
-../bin/signalServer -c ../bin/config.ini
+../bin/sigServ/signalServer -c ../bin/sigServ/sigConfig.ini

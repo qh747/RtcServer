@@ -8,9 +8,6 @@ import (
 	"os/signal"
 	"rtcServer/pkg/Com/Conf"
 	"rtcServer/pkg/Com/Log"
-	"rtcServer/pkg/Sig/SigConn"
-	"rtcServer/pkg/Sig/SigEv"
-	"rtcServer/pkg/Sig/SigServ"
 	"sync"
 	"syscall"
 	"time"
@@ -31,7 +28,7 @@ func initEnvir() {
 		fmt.Fprintln(os.Stderr, "Options:")
 		flag.PrintDefaults()
 		fmt.Fprintln(os.Stderr, "\nExamples:")
-		fmt.Fprintln(os.Stderr, "  myapp -c=./sigConfig.ini")
+		fmt.Fprintln(os.Stderr, "  myapp -c=./medConfig.ini")
 		os.Exit(0)
 	}
 
@@ -57,18 +54,6 @@ func initEnvir() {
 		fmt.Fprintf(os.Stderr, "Init log error. err: %v\n", err)
 		os.Exit(1)
 	}
-
-	// 加载媒体服务连接配置
-	if err := SigConn.InitConnSelect(Conf.SigConf.SigConnAddr); nil != err {
-		fmt.Fprintf(os.Stderr, "Init media conn error. err: %v\n", err)
-		os.Exit(1)
-	}
-
-	// 加载事件回调函数
-	if err := SigEv.InitEv(); nil != err {
-		fmt.Fprintf(os.Stderr, "Init event error. err: %v\n", err)
-		os.Exit(1)
-	}
 }
 
 // startEnvir 启动环境
@@ -77,19 +62,12 @@ func startEnvir() {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	sigServ := SigServ.NewServer(Conf.SigConf.GetAddr(), Conf.SigConf.SigStatic)
-	sigSslServ := SigServ.NewSslServer(Conf.SigConf.GetSslAddr(), Conf.SigConf.SigStatic, Conf.SigConf.SigSslKey, Conf.SigConf.SigSslCert)
-
 	// 创建等待组用于等待所有服务关闭
 	var wg sync.WaitGroup
 
 	// 子协程启动服务
 	wg.Go(func() {
-		sigServ.Start()
-	})
 
-	wg.Go(func() {
-		sigSslServ.Start()
 	})
 
 	// 等待退出
@@ -102,8 +80,6 @@ func startEnvir() {
 	cancel()
 
 	// 关闭服务
-	sigServ.Stop()
-	sigSslServ.Stop()
 
 	// 等待所有服务协程结束
 	done := make(chan struct{})

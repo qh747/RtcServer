@@ -1,2 +1,0 @@
-# librtcbase
-webrtc base library

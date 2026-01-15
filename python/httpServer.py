@@ -41,7 +41,7 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
         except json.JSONDecodeError as e:
             error_response = {
                 "code": -1,
-                "msg": "无效的JSON格式"
+                "msg": "Json format invalid"
             }
             self.send_response(400)
             self.send_header('Content-type', 'application/json')
@@ -50,7 +50,7 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
         except Exception as e:
             error_response = {
                 "code": -2,
-                "msg": f"服务器内部错误: {str(e)}"
+                "msg": f"Server internal error: {str(e)}"
             }
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
@@ -60,8 +60,8 @@ class JSONRequestHandler(BaseHTTPRequestHandler):
 def run_server(port=8093):
     server_address = ('', port)
     httpd = HTTPServer(server_address, JSONRequestHandler)
-    print(f"服务器已启动，监听端口 {port}")
-    print(f"使用 Ctrl+C 停止服务器")
+    print(f"Server start. listen port: {port}")
+    print(f"Use ctrl+c to stop")
     httpd.serve_forever()
 
 if __name__ == '__main__':
